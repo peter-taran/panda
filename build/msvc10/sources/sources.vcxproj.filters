@@ -1,0 +1,190 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="config">
+      <UniqueIdentifier>{a62c02e3-b4d9-4445-bf2e-38d31f534c44}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="containers">
+      <UniqueIdentifier>{6b217e0f-268e-4845-8ae8-c4749d5f3afa}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="memory">
+      <UniqueIdentifier>{eaf6c522-50bb-429f-8de2-ca1970047358}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="numerics">
+      <UniqueIdentifier>{a5f01298-e544-4e2e-8685-75691ca28e18}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="strings">
+      <UniqueIdentifier>{56e8a478-5611-45b4-8760-f8f2f0267c0c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="utils">
+      <UniqueIdentifier>{a088f98b-32a7-41f9-b32c-113636491775}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="errors">
+      <UniqueIdentifier>{db60283f-6cea-4e75-8d1e-08f7c5728700}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="platform">
+      <UniqueIdentifier>{2ef30dc9-7a02-4863-9f37-56b214a230f4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="logic">
+      <UniqueIdentifier>{fea6c0f8-9a73-45d8-b065-ee6a0b674a42}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="strings\encodings">
+      <UniqueIdentifier>{5ae119ab-3105-4683-978d-6a55bd2221eb}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="type">
+      <UniqueIdentifier>{77171fdd-fa7f-4aba-a34b-6df03d8c5899}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\..\src\config\postfix.h">
+      <Filter>config</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\config\prefix.h">
+      <Filter>config</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\panda.h" />
+    <ClInclude Include="..\..\..\src\utils\oneof.h">
+      <Filter>utils</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\utils\foreach.h">
+      <Filter>utils</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\utils\assertions.h">
+      <Filter>utils</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\numerics\nativeintegers.h">
+      <Filter>numerics</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\errors\error.h">
+      <Filter>errors</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\utils\consts.h">
+      <Filter>utils</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\logic\bool.h">
+      <Filter>logic</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\logic\null.h">
+      <Filter>logic</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\numerics\nativefloats.h">
+      <Filter>numerics</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\memory\memaddr.h">
+      <Filter>memory</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\memory\membuff.h">
+      <Filter>memory</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\containers\seq.h">
+      <Filter>containers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\utils\sizeofa.h">
+      <Filter>utils</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\strings\encodings.h">
+      <Filter>strings</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\strings\char.h">
+      <Filter>strings</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\strings\str.h">
+      <Filter>strings</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\memory\memarea.h">
+      <Filter>memory</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\memory\byte.h">
+      <Filter>memory</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\memory\memoffs.h">
+      <Filter>memory</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\numerics\nativeintegers_impl.h">
+      <Filter>numerics</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\containers\array.h">
+      <Filter>containers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\strings\encodings\ascii.h">
+      <Filter>strings\encodings</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\strings\encodings\utf.h">
+      <Filter>strings\encodings</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\strings\encodings_impl.h">
+      <Filter>strings</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\memory\memsize.h">
+      <Filter>memory</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\type\traits.h">
+      <Filter>type</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\utils\misc.h">
+      <Filter>utils</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\memory\mem.h">
+      <Filter>memory</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\type\facade.h">
+      <Filter>type</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\..\..\src\config\readme.txt">
+      <Filter>config</Filter>
+    </None>
+    <None Include="..\..\..\readme.txt" />
+    <None Include="..\..\..\src\memory\memaddr.inl">
+      <Filter>memory</Filter>
+    </None>
+    <None Include="..\..\..\src\memory\memoffs.inl">
+      <Filter>memory</Filter>
+    </None>
+    <None Include="..\..\..\src\numerics\nativeintegers.inl">
+      <Filter>numerics</Filter>
+    </None>
+    <None Include="..\..\..\src\memory\memarea.inl">
+      <Filter>memory</Filter>
+    </None>
+    <None Include="..\..\..\src\memory\membuff.inl">
+      <Filter>memory</Filter>
+    </None>
+    <None Include="..\..\..\src\strings\char.inl">
+      <Filter>strings</Filter>
+    </None>
+    <None Include="..\..\..\src\strings\str.inl">
+      <Filter>strings</Filter>
+    </None>
+    <None Include="..\..\..\src\errors\error.inl">
+      <Filter>errors</Filter>
+    </None>
+    <None Include="..\..\..\src\strings\encodings.inl">
+      <Filter>strings</Filter>
+    </None>
+    <None Include="..\..\..\src\memory\memsize.inl">
+      <Filter>memory</Filter>
+    </None>
+    <None Include="..\..\..\src\memory\mem.inl">
+      <Filter>memory</Filter>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\..\src\strings\str.cpp">
+      <Filter>strings</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\errors\error.cpp">
+      <Filter>errors</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\strings\encodings\utf.cpp">
+      <Filter>strings\encodings</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\memory\mem.cpp">
+      <Filter>memory</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\memory\misc.cpp">
+      <Filter>utils</Filter>
+    </ClCompile>
+  </ItemGroup>
+</Project>

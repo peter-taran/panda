@@ -1,0 +1,133 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{2C38ED96-6441-4738-8366-3AF613A1762C}</ProjectGuid>
+    <RootNamespace>tests</RootNamespace>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <WholeProgramOptimization>false</WholeProgramOptimization>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <TargetName>pandatests-msvc10-dbg</TargetName>
+    <OutDir>$(SolutionDir)..\..\tests\bin\</OutDir>
+    <IncludePath>$(INCLUDE);$(IncludePath)</IncludePath>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <TargetName>pandatests-msvc10</TargetName>
+    <OutDir>$(SolutionDir)..\..\tests\bin\</OutDir>
+    <IncludePath>$(INCLUDE);$(IncludePath)</IncludePath>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>Disabled</Optimization>
+      <ExceptionHandling>Async</ExceptionHandling>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <PrecompiledHeaderFile>../tests.h</PrecompiledHeaderFile>
+    </ClCompile>
+    <Link>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+    </Link>
+    <PostBuildEvent>
+      <Command>$(TargetPath) --result_code=no --report_level=no --log_level=warning</Command>
+    </PostBuildEvent>
+    <PostBuildEvent>
+      <Message>running tests</Message>
+    </PostBuildEvent>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>MinSpace</Optimization>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <ExceptionHandling>Async</ExceptionHandling>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <PrecompiledHeaderFile>../tests.h</PrecompiledHeaderFile>
+    </ClCompile>
+    <Link>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+    </Link>
+    <PostBuildEvent>
+      <Command>$(TargetPath) --result_code=no --report_level=no --log_level=warning</Command>
+    </PostBuildEvent>
+    <PostBuildEvent>
+      <Message>running tests</Message>
+    </PostBuildEvent>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\..\tests\containers\array.cpp" />
+    <ClCompile Include="..\..\..\tests\containers\seq.cpp" />
+    <ClCompile Include="..\..\..\tests\errors\error.cpp" />
+    <ClCompile Include="..\..\..\tests\framework.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">NotUsing</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="..\..\..\tests\logic\bool.cpp" />
+    <ClCompile Include="..\..\..\tests\logic\null.cpp" />
+    <ClCompile Include="..\..\..\tests\memory\byte.cpp" />
+    <ClCompile Include="..\..\..\tests\memory\mem.cpp" />
+    <ClCompile Include="..\..\..\tests\memory\memarea.cpp" />
+    <ClCompile Include="..\..\..\tests\memory\memoffs.cpp" />
+    <ClCompile Include="..\..\..\tests\memory\memsize.cpp" />
+    <ClCompile Include="..\..\..\tests\strings\char.cpp" />
+    <ClCompile Include="..\..\..\tests\strings\encodings.cpp" />
+    <ClCompile Include="..\..\..\tests\strings\str.cpp" />
+    <ClCompile Include="..\..\..\tests\memory\memaddr.cpp" />
+    <ClCompile Include="..\..\..\tests\memory\membuff.cpp" />
+    <ClCompile Include="..\..\..\tests\numerics\nativefloats.cpp" />
+    <ClCompile Include="..\..\..\tests\numerics\nativeintegers.cpp" />
+    <ClCompile Include="..\..\..\tests\tests.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
+      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">tests.h</PrecompiledHeaderFile>
+      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">tests.h</PrecompiledHeaderFile>
+    </ClCompile>
+    <ClCompile Include="..\..\..\tests\type\facade.cpp" />
+    <ClCompile Include="..\..\..\tests\type\traits.cpp" />
+    <ClCompile Include="..\..\..\tests\utils\assertions.cpp" />
+    <ClCompile Include="..\..\..\tests\utils\foreach.cpp" />
+    <ClCompile Include="..\..\..\tests\utils\oneof.cpp" />
+    <ClCompile Include="..\..\..\tests\utils\sizeofa.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\..\..\tests\readme.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\..\tests\tests.h" />
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>

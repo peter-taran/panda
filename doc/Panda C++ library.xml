@@ -1,0 +1,173 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<article version="5.0" xmlns="http://docbook.org/ns/docbook"
+         xmlns:xlink="http://www.w3.org/1999/xlink"
+         xmlns:xi="http://www.w3.org/2001/XInclude"
+         xmlns:svg="http://www.w3.org/2000/svg"
+         xmlns:m="http://www.w3.org/1998/Math/MathML"
+         xmlns:html="http://www.w3.org/1999/xhtml"
+         xmlns:db="http://docbook.org/ns/docbook">
+  <info>
+    <title>Panda C++ library</title>
+
+    <author>
+      <personname><firstname>Пётр
+      </firstname><surname>Таран</surname></personname>
+    </author>
+  </info>
+
+  <section>
+    <title>Итераторы</title>
+
+    <para>Итератор объединяет две основные функции: он ссылается на текущий
+    элемент некоторой последовательности или потока и умеет перемещаться по
+    последовательности вперёд и/или назад.</para>
+
+    <para>Существует множество типов итераторов, каждый из которых
+    параметризован элементом, доступ к которому обеспечивает.</para>
+
+    <para><literal>ReadItr</literal> предназначен для последовательного чтения
+    элементов. Он предназначен для последовательного перебора контейнеров, а
+    так же реализует концепцию входного потока (input stream).</para>
+
+    <para><literal>AppendItr</literal> предназначен для узкой задачи:
+    добавления элементов в конец последовательности или в конец потока. Он
+    реализует концепцию output stream.<?xxe-remark Peter
+2012-03-12T15:48:23Z
+AppendItr не является итератором в полной мере, поэтому должен называться как-то иначе?></para>
+
+    <para><literal>WriteItr</literal> умеет и добавлять элементы в
+    последовательность и перезаписывать имеющиеся элементы.</para>
+
+    <para><literal>*Bidi</literal>-версии итераторов (bidirectional) имеют
+    возможности перемещаться по последовательности не только в прямом, но и в
+    обратном направлении.</para>
+
+    <para>Резюмируя функции:</para>
+
+    <informaltable>
+      <tgroup cols="6">
+        <colspec colnum="1" colwidth="1.5*"/>
+
+        <thead>
+          <row>
+            <entry align="center">Операция</entry>
+
+            <entry align="center"><literal>ReadItr</literal></entry>
+
+            <entry align="center"><literal>AppendItr</literal></entry>
+
+            <entry align="center"><literal>WriteItr</literal></entry>
+
+            <entry align="center"><literal>ReadItrBidi</literal></entry>
+
+            <entry align="center"><literal>WriteItrBidi</literal></entry>
+          </row>
+        </thead>
+
+        <tbody>
+          <row>
+            <entry>чтение текущего элемента</entry>
+
+            <entry>да</entry>
+
+            <entry>—</entry>
+
+            <entry>да</entry>
+
+            <entry>да</entry>
+
+            <entry>да</entry>
+          </row>
+
+          <row>
+            <entry>переход вперёд</entry>
+
+            <entry>да</entry>
+
+            <entry>—</entry>
+
+            <entry>да</entry>
+
+            <entry>да</entry>
+
+            <entry>да</entry>
+          </row>
+
+          <row>
+            <entry>перезапись текущего элемента</entry>
+
+            <entry>—</entry>
+
+            <entry>—</entry>
+
+            <entry>да</entry>
+
+            <entry>—</entry>
+
+            <entry>да</entry>
+          </row>
+
+          <row>
+            <entry>добавление элемента</entry>
+
+            <entry>—</entry>
+
+            <entry>да</entry>
+
+            <entry>да</entry>
+
+            <entry>—</entry>
+
+            <entry>да</entry>
+          </row>
+
+          <row>
+            <entry>переход назад</entry>
+
+            <entry>—</entry>
+
+            <entry>—</entry>
+
+            <entry>—</entry>
+
+            <entry>да</entry>
+
+            <entry>да</entry>
+          </row>
+        </tbody>
+      </tgroup>
+    </informaltable>
+
+    <para>Так же существует универсальный итератор
+    <literal>Iterator</literal>, номинально содержащий полный набор функций,
+    который работает оболочкой над любым из перечисленных итераторов.
+    Неподдерживаемые функции при попытке вызова возвращают исключения.<example>
+        <title>Пример. Чтение потока символов до окончания слова</title>
+
+        <programlisting>Str readWord(ReadItr&lt;Char&gt;&amp; stream)
+{
+    MutableStr result;
+    for(; stream.ended(); ++stream)
+    {
+        Char c = *stream;
+        if( c == ' ' || c == '\t' )
+            break;
+        result.append(c);
+    }
+    return result;
+}</programlisting>
+      </example></para>
+
+    <example>
+      <title>Пример. Вывод строки в поток символов</title>
+
+      <programlisting>void outputString(const Str&amp; str, AppendItr&lt;Char&gt;&amp; output)
+{
+    foreach(Char c, str)
+        output.append(c);
+}</programlisting>
+    </example>
+
+    <para/>
+  </section>
+</article>

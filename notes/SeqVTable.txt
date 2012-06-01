@@ -1,0 +1,415 @@
+
+template<class To, class From>
+inline void* voidStaticCast(void* from)
+{
+	return static_cast<To*>( static_cast<From*>(from) );
+}
+
+typedef void* (*VoidStaticCast)(void* from);
+
+class Caster
+{
+public:
+	virtual void* cast(void* from) = 0;
+	virtual void destroy() = 0;
+	virtual Caster* clone() = 0;
+}
+
+// todo: Caster'а мало. Надо его назвать Типоспецифичным интерфейсом
+// и ещё добавить такие вещи, как клонирование элемента (надо для копирования
+// контейнера и перемещения данных) и деструкторэлемента. Их всех вызывает
+// владелец данных
+// Ну и virtual-вариант с new/delete не нравится. Там всё зависит от статических
+// типов, стало быть нужен ук-ль на статическую таблицу безо всякой дин.памяти.
+
+struct TypeSpecific
+{
+	typedef void (*ItemDestructor)(void *item);
+	ItemDestructor _itemDestructor;
+
+	typedef void* (*CloneItem)(void *item);
+	CloneItem _cloneItem;
+
+	typedef void* (*CastToItem)(void* from);
+	CastToItem _castToItem;
+};
+
+
+class<class Item>
+struct TypeSpecific_Simple: public TypeSpecific
+{
+	TypeSpecific_Simple():
+		_itemDestructor(&TypedDestructor<Item>::destructor),
+		_cloneItem     (&typedCloner<Item>),
+		_castToItem    (0)
+	{}
+};
+
+class<class Item, class CvtFrom>
+struct TypeSpecific_Cvt: public TypeSpecific
+{
+	TypeSpecific_Cvt():
+		_itemDestructor(&TypedDestructor<Item>::destructor),
+		_cloneItem     (&typedCloner<Item>),
+		_castToItem    (&voidStaticCast<Item, CvtFrom>)
+	{}
+};
+
+TypeSpecific* _tspec = &TypeSpecific_Cvt<Item>();
+
+// То что выше это матёрая херня! Всё равно создание объекта на каждый контейнер
+// Надо, чтобы объект возникал сам, по факту типизации. Как?!!
+// А всё потом, что нет статических виртуальных функций и объектов-классов, состоящих
+// только из статических функций.
+// С ними было бы так:
+
+class TypeSpecific
+{
+public:
+	static virtual void itemDestructor(void *item) = 0;
+};
+
+class<class Item>
+class TypeSpecific_Simple
+{
+	static virtual void itemDestructor(void *item)
+	{
+		delete static_cast<Item*>(item);
+	}
+}
+
+classof<TypeSpecific>* _tspec = TypeSpecific_Simple<Item>;
+
+// ВЫХОД!!!
+// Размещать не ук-ль на TypeSpecific, а сам TypeSpecific. Он всегда = указателю,
+// соотв-но надо просто память под него разместить.
+// Это хак, правда. Нужно тестирование поддержки этого компилятором.
+// Тестирование такое:
+
+   TypeSpecific_Cvt x;
+   TypeSpecific *y = &x;
+   размеры и содержимое x и *y должно совпадать
+   размер должен быть = размеру Pointer (если не равен, надо просто сколько надо памяти выделять)
+
+
+class<class Item>
+class Seq
+{
+public:
+	Seq()
+	{
+		new(&_tspecStor) TypeSpecific_Simple<Item>()
+	}
+
+	template<class FromItem>
+	Seq(const Seq<FromItem> &seq)
+	{
+		new(&_tspecStor) TypeSpecific_Cvt<Item, FromItem>();
+	}
+
+private:
+	Pointer _tspecStor;
+	inline TypeSpecific& tspec()
+	{
+		return *static_cast<TypeSpecific*>(static_cast<void*>(&_tspecStor));
+	}
+};
+
+
+
+template<class To, class From>
+class TypedCaster: public Caster
+{
+public:
+	virtual void* cast(void* from)
+	{
+		return voidStaticCast(from);
+	}
+
+	virtual void destroy()
+	{
+		delete this;
+	}
+
+	virtual Caster* clone()
+	{
+		return new TypedCaster;
+	}
+
+	static Caster* create()
+	{
+		return new TypedCaster;
+	}
+};
+
+template<class To, class From>
+class TypedChainedCaster: public Caster
+{
+	Caster& _prev;
+
+	inline TypedChainedCaster(Caster& prev):
+		_prev(prev)
+	{}
+
+public:
+	virtual void* cast(void* from)
+	{
+		void* p = _prev.cast(from);
+		return voidStaticCast(p);
+	}
+
+	virtual void destroy()
+	{
+		_prev.destroy();
+		delete this;
+	}
+
+	virtual Caster* clone()
+	{
+		return new TypedChainedCaster(_prev);
+	}
+
+	static Caster* create(Caster& prev)
+	{
+		return new TypedChainedCaster(prev);
+	}
+};
+
+
+template<class Item_>
+struct Impl_Seq
+{
+	typedef Item_ Item;
+
+	// Это тоже надо делать на явно вызываемых функциях
+
+	// Implementation of iterator
+	VT_SeqIter* _vtIter;
+
+	virtual void          free() = 0;
+	virtual Impl_Seq*     clone() = 0;
+
+	virtual bool          ownsData() = 0;
+
+	virtual Impl_SeqIter* first(bool fastOnly) = 0;     // can ret 0 only when fastOnly set
+	virtual Impl_SeqIter* last(bool fastOnly) = 0;      // can ret 0 only when fastOnly set
+	virtual Impl_SeqIter* fastByIndex(SMem index) = 0;  // if can't fast, ret 0
+	virtual o<bool>       fastEmpty() = 0;              // if can't fast, ret null
+	virtual o<UMem>       fastSize() = 0;               // if can't fast, ret null
+};
+
+
+/*struct VT_Ref
+{
+	// Destruct iterator data
+	// Leave _destruct==0 if specific destruction do not needed
+	typedef void (*Destruct)(Storage &stor);
+	Destruct _destruct;
+
+	// Clone iterator
+	// Leave _clone==0 if simple copying of storage is enough
+	typedef void (*Clone)(Storage &stor, SeqIterator &result);
+	Clone _clone;
+
+	// Dereference iterator - get referencing item
+	// If iterator is outside of sequence, return 0
+	// _deref CANNOT be 0
+	typedef Item* (Deref)(Storage &stor);
+	Deref _deref;
+};*/
+
+
+//template<class Item_> // нельзя зависеть от типа элемента, ибо тогда таких таблиц надо три вагона
+struct VT_SeqIter       // или можно? наверное, так и нужно, а в Iterator поместить ук-ль на функцию,
+                        // трансформирующую void* в нужный тип
+{
+	//typedef Item_ Item;
+
+	typedef boost::array<RawByte, sizeof(Addr) * 2> Storage;
+
+	// Destruct iterator data
+	// Leave _destruct==0 if specific destruction do not needed
+	typedef void (*Destruct)(Storage &stor);
+	Destruct _destruct;
+
+	// Clone iterator
+	// Leave _clone==0 if simple copying of storage is enough
+	typedef void (*Clone)(Storage &stor, SeqIterator &result);
+	Clone _clone;
+
+	// Dereference iterator - get referencing item
+	// If iterator is outside of sequence, return 0
+	// _deref CANNOT be 0
+	typedef Item* (Deref)(Storage &stor);
+	Deref _deref;
+
+	// Get next/previous iterator of sequence. Must ALWAYS initialize result
+	// Leave _next/_prev==0 if forward/backward walking is not supported
+	typedef void (*Shift)(Storage &stor, SeqIterator &result);
+	Shift _next;
+	Shift _prev;
+
+	// Get iterator, shifted by 'offset' in forward or backward direction
+	// Must ALWAYS initialize result.
+	// Leave _fastForward/_fastBack == 0 if fast shifting is not supported
+	typedef void (*FastGo)(Storage &stor, UMem offset, SeqIterator &result);
+	FastGo _fastForward;
+	FastGo _fastBack;
+
+	// Return true if iterators point to the same place of same containers
+	// _equal CANNOT be 0
+	typedef bool (*Equal)(Storage &stor, SeqIterator &iter2);
+	Equal _equal;
+
+	// Return:
+	//     null   if containers are different
+	//     true   if this iterator is before iter2
+	//     false  otherwise
+	// _equal CANNOT be 0
+	typedef o<bool> (*Before)(Storage &stor, SeqIterator &iter2);
+	Before _before;
+
+	VT_SeqIter(
+		Destruct destruct,
+		Clone    clone,
+		Deref    deref,
+		Shift    next,
+		Shift    prev,
+		FastGo   fastForward,
+		FastGo   fastBack,
+		Equal    equal,
+		Before   before
+	):
+		_destruct    (destruct),
+		_clone       (clone),
+		_deref       (deref),
+		_next        (next),
+		_prev        (prev),
+		_fastForward (fastForward),
+		_fastBack    (fastBack),
+		_equal       (equal),
+		_before      (before)
+	{}
+};
+
+
+template<class Item_>
+class SeqIterator: public SeqIteratorBase // todo: can we move most of implementation there?
+{
+public:
+	typedef Item_ Item;
+
+	~Iterator()
+	{
+		if( 0 != _vt && 0 != _vt->_destruct )
+		{
+			(*_impl->_destruct)(_storage);
+		}
+	}
+
+	Iterator(Uninitialized): _vt(0) {}
+
+	Item* operator*()
+	{
+		// don't checking for 0 nowhere, let access violation do his job!
+		void *item = (*_vt->_deref)(_storage);
+		if( 0 != _caster )
+			return static_cast<Item*>( _caster->cast(item) );
+		else
+			return static_cast<Item*>(item);
+	}
+	
+	explicit Iterator(const Seq &seq, SMem index = 0):
+		_vt(seq._impl->_vtIter)
+	{
+		if( 0 != seq._vt->_fastByIndex &&
+		    seq._vt->_fastByIndex(seq._storage, index, _storage) )
+		{
+			return;
+		}
+
+		// todo: update here
+		if( index >= 0 )
+		{
+			_impl = seq._impl->first(false);
+			while(index > 0 && 0 != _impl->item())
+			{
+				Impl_SeqIter* toDel = _impl;
+			    _impl = _impl->next();
+				toDel->free();
+				--index;
+			}
+		}
+		else
+		{
+			_impl = seq._impl->last(false);
+			++index;
+			while(index < 0 && 0 != _impl->item())
+			{
+				Impl_SeqIter* toDel = _impl;
+			    _impl = _impl->prev();
+				toDel->free();
+				++index;
+			}
+		}
+	}
+
+private:
+	VT_SeqIter::Storage _storage;
+	VT_SeqIter<Item>*   _vt;
+	Caster*             _caster; // брать из контейнера
+};
+
+
+template<class Item_>
+class Seq
+{
+public:
+	typedef Item_ Item;
+
+	Item& operator[](SMem index)
+	{
+		return *Iterator(*this, index);
+	}
+
+	typedef SeqIterator<Item> iterator;
+
+	// todo: нужны функции, определяющие свойства итераторов;
+	// типа какие инвалидными становятся и т.п.
+
+private:
+	Impl_Seq<Item>* _impl;
+};
+
+
+template<class Item>
+class Seq
+{
+public:
+	~Seq()
+	{
+		if( 0 != _vt->destruct )
+			(*_vt->destruct)(_storage);
+		if( 0 != _cast )
+			_cast->destroy();
+	}
+	
+	Seq(const Seq &from):
+		_vt(_vt), _cast(0)
+	{
+		if( 0 != from._cast )
+			_cast = from._cast->clone();
+		_vt->clone(from._storage, _storage);
+	}
+
+	template<class From>
+	Seq(const Seq<From> &seq):
+		_vt(_vt), _cast(0)
+	{
+		if( 0 != from._cast )
+			_cast = ChainedTypedCast<Item, From>::create(*from._cast);
+		else
+			_cast = TypedCast<Item, From>::create();
+		_vt->clone(from._storage, _storage);
+	}
+};

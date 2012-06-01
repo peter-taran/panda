@@ -1,0 +1,97 @@
+template<class Item_>
+class SeqIterator
+{
+public:
+	typedef Item_ Item;
+
+	typedef Membuf<sizeof(void*)> Data;
+
+private:
+	Data     _data;
+	Methods* _methods;
+};
+
+template<class Item_>
+class Seq
+{
+public:
+	typedef Item_ Item;
+	
+	Seq()
+	{
+		// TODO: empty array
+	}
+	
+	Seq(const Uninitialized&):
+		_data(uninitialized)
+	{}
+	
+	template<class From>
+	Seq(const From& from)
+	{
+		seqInit(from, &_data, &_methods);
+	}
+	
+	Seq(const Seq& from):
+		_methods(from._methods)
+	{
+		from._methods->clone(_data, from._data);
+	}
+	
+	typedef Membuf<2 * sizeof(void*)> Data;
+	
+	struct Methods
+	{
+		typedef void (Destruct)(Data& data);
+		Destruct* destruct;
+
+		typedef void (Clone)(Data& dest, const Data& source);
+		Clone* clone;
+		
+		typedef void (Swap)(Data& data1, Data& data2);
+		Swap* swap;
+		
+		typedef void (Begin)(const Data& data, SeqIterator::Data& iterator);
+		Begin* begin;
+
+		typedef void (End)(const Data& data, SeqIterator::Data& iterator);
+		End* end;
+
+		typedef void (ByIndex)(const Data& data, size_t index, SeqIterator::Data& iterator);
+		ByIndex* byIndex;
+		
+		typedef size_t (ItemCount)(const Data& data);
+		ItemCount* itemCount;
+	};
+
+private:
+	Data     _data;
+	Methods* _methods;
+};
+
+template<class Item>
+struct SeqArrayWrapper
+{
+	Item* begin;
+	Item* end;
+};
+
+template<class Item, size_t arraySize>
+void seqInit(const Item (&array)[arraySize], Seq::Data *rawData, Seq::Methods** methods)
+{
+	SeqArrayWrapper<Item>* data = rawData->as<SeqArrayWrapper<Item>*>();
+	
+	data->begin = array;
+	data->end   = array + arraySize;
+	
+	static const SeqMethods m =
+	{
+		&SeqMethodsDefault::clone;
+		&SeqMethodsDefault::swap;
+		&SeqMethodsDefault::begin;
+		&SeqMethodsDefault::end;
+		&SeqMethodsDefault::byIndex;
+		&SeqMethodsDefault::itemCount;
+	};
+	*methods = &m;
+}
